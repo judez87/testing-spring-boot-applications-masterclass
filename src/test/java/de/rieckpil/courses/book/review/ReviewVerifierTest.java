@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 
 import static de.rieckpil.courses.book.review.RandomReviewParameterResolverExtension.RandomReview;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(RandomReviewParameterResolverExtension.class)
 class ReviewVerifierTest {
@@ -23,8 +24,7 @@ class ReviewVerifierTest {
 
   @Test
   void shouldFailWhenReviewContainsSwearWord() {
-    String review = "This book is shit";
-    System.out.println("Testing a review");
+    String review = "This book is shit, and I think the test should fail";
 
     boolean result = reviewVerifier.doesMeetQualityStandards(review);
     assertFalse(result, "ReviewVerifier did not detect swear word");
@@ -32,17 +32,33 @@ class ReviewVerifierTest {
 
   @Test
   @DisplayName("Should fail when review contains 'lorem ipsum'")
-  void testLoremIpsum() {}
+  void testLoremIpsum() {
+    String review = "This book is excelent, and Lorem ipsum dolor sit amet, consectetur adipiscing";
+
+    boolean result = reviewVerifier.doesMeetQualityStandards(review);
+    assertFalse(result, "ReviewVerifier did not detect lorem ipsum");
+  }
 
   @ParameterizedTest
   @CsvFileSource(resources = "/badReview.csv")
-  void shouldFailWhenReviewIsOfBadQuality(String review) {}
+  void shouldFailWhenReviewIsOfBadQuality(String review) {
+    boolean result = reviewVerifier.doesMeetQualityStandards(review);
+    assertFalse(result, "ReviewVerifier didn't detect bad quality");
+  }
 
   @RepeatedTest(5)
-  void shouldFailWhenRandomReviewQualityIsBad(@RandomReview String review) {}
+  void shouldFailWhenRandomReviewQualityIsBad(@RandomReview String review) {
+    boolean result = reviewVerifier.doesMeetQualityStandards(review);
+    assertFalse(result, "ReviewVerifier didn't detect bad quality with random review: " + review);
+  }
 
   @Test
-  void shouldPassWhenReviewIsGood() {}
+  void shouldPassWhenReviewIsGood() {
+    String review = "This book is excelent, and I think the test should pass!";
+
+    boolean result = reviewVerifier.doesMeetQualityStandards(review);
+    assertTrue(result, "ReviewVerifier didn't approved the good quality review");
+  }
 
   @Test
   void shouldPassWhenReviewIsGoodHamcrest() {}
