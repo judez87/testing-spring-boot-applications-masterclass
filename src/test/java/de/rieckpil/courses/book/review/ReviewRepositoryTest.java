@@ -1,15 +1,19 @@
 package de.rieckpil.courses.book.review;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 import javax.sql.DataSource;
 
 import jakarta.persistence.EntityManager;
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+
+import static org.junit.Assert.assertNotNull;
 
 @DataJpaTest(
     properties = {
@@ -30,7 +34,23 @@ class ReviewRepositoryTest {
   @Autowired private TestEntityManager testEntityManager;
 
   @Test
-  void notNull() throws SQLException {}
+  void notNull() throws SQLException {
+    assertNotNull(entityManager);
+    assertNotNull(cut);
+    assertNotNull(dataSource);
+    System.out.println(dataSource.getConnection().getMetaData().getDatabaseProductName());
+
+    Review review = new Review();
+    review.setTitle("Title");
+    review.setContent("Content");
+    review.setCreatedAt(LocalDateTime.now());
+    review.setRating(5);
+    review.setBook(null);
+    review.setUser(null);
+
+    Review saved = cut.save(review);
+    assertNotNull(saved.getId());
+  }
 
   @Test
   void transactionalSupportTest() {}
